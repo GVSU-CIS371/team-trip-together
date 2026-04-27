@@ -1,0 +1,19 @@
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build --base=./",
+    "preview": "vite preview",
+    "deploy": "npm run build && gh-pages -d dist"
+  },
+  "dependencies": {
+    "@vitejs/plugin-vue": "latest",
+    "vite": "latest",
+    "vue": "latest",
+    "vue-tsc": "latest",
+    "typescript": "latest",
+    "pinia": "latest",
+    "firebase": "latest",
+    "gh-pages": "latest"
+  },
+  "devDependencies": {}
+}
