@@ -4,6 +4,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDocs,
   onSnapshot,
   orderBy,
   query,
@@ -151,15 +152,33 @@ export const useTripStore = defineStore("tripStore", {
       }
     },
 
-    async inviteUserToTrip(tripId: string, userId: string) {
-      const trip = this.trips.find((item) => item.id === tripId);
-      if (!trip) return;
+    async inviteUserToTripByEmail(tripId: string, email: string) {
+  const trip = this.trips.find((item) => item.id === tripId);
+  if (!trip) return;
 
-      const updatedMembers = Array.from(new Set([...trip.members, userId]));
-      await updateDoc(doc(db, "trips", tripId), {
-        members: updatedMembers,
-      });
-    },
+  const usersQuery = query(
+    collection(db, "users"),
+    where("email", "==", email.trim().toLowerCase())
+  );
+
+  const snapshot = await getDocs(usersQuery);
+
+  if (snapshot.empty) {
+    this.errorMessage = "No user found with that email.";
+    return;
+  }
+
+  const invitedUser = snapshot.docs[0].data();
+  const invitedUserId = invitedUser.uid;
+
+  const updatedMembers = Array.from(new Set([...trip.members, invitedUserId]));
+
+  await updateDoc(doc(db, "trips", tripId), {
+    members: updatedMembers,
+  });
+
+  this.errorMessage = "";
+},
 
     async addActivity(payload: Omit<Activity, "id" | "createdAt">) {
       await addDoc(collection(db, "activities"), {

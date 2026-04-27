@@ -6,7 +6,7 @@ import type { Trip } from "../types";
 const tripStore = useTripStore();
 
 const editingTripId = ref("");
-const inviteUserId = ref("");
+const inviteEmail = ref("");
 
 function startEditing(trip: Trip) {
   editingTripId.value = trip.id;
@@ -18,9 +18,9 @@ async function saveTrip(trip: Trip) {
 }
 
 async function inviteSelectedUser() {
-  if (!tripStore.selectedTripId || !inviteUserId.value) return;
-  await tripStore.inviteUserToTrip(tripStore.selectedTripId, inviteUserId.value);
-  inviteUserId.value = "";
+  if (!tripStore.selectedTripId || !inviteEmail.value) return;
+  await tripStore.inviteUserToTripByEmail(tripStore.selectedTripId, inviteEmail.value);
+  inviteEmail.value = "";
 }
 </script>
 
@@ -60,10 +60,14 @@ async function inviteSelectedUser() {
     </div>
 
     <div v-if="tripStore.selectedTrip" class="invite-box">
-      <h3>Invite by user ID</h3>
-      <p class="muted">For the class demo, copy another user's Firebase UID and add it here.</p>
-      <input v-model="inviteUserId" placeholder="User ID" />
+      <h3>Invite by email</h3>
+      <p class="muted">The user must already have an account.</p>
+      <input v-model="inviteEmail" type="email" placeholder="friend@example.com" />
       <button class="secondary-button full-width" @click="inviteSelectedUser">Invite User</button>
+
+      <p v-if="tripStore.errorMessage" class="error">
+        {{ tripStore.errorMessage }}
+      </p>
     </div>
   </section>
 </template>
